@@ -2,3 +2,7 @@ fastapi
 pydantic
 uvicorn
 python-multipart
+jinja2
+torch
+transformers
+pytest

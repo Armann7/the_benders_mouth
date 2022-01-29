@@ -1,0 +1,39 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<form action="/answer" method="post">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 card bg-light mb-3">
+                <div class="card-body">
+                    <label>Phrase</label>
+                    <br>
+                    <textarea id="phrase_text" name="phrase" cols="100" rows="2"
+                              placeholder="How are you?" required wrap="hard">
+                        It was a dark and stormy night...
+                    </textarea>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-3">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<br>
+<div class="container-fluid">
+    {% for phrase in conversation %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 card bg-light mb-3">
+                <div class="card-body">
+                    <p class="card-text"> Somebody: {{ phrase.text }}</p>
+                    <p class="card-text"> Bender: {{ phrase.answer }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
