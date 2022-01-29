@@ -8,13 +8,12 @@
                 <div class="card-body">
                     <label>Phrase</label>
                     <br>
-                    <textarea id="phrase_text" name="phrase" cols="100" rows="2"
+                    <textarea id="phrase_text" name="phrase" class="col-md-12" rows="2"
                               placeholder="How are you?" required wrap="hard">
-                        It was a dark and stormy night...
                     </textarea>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary mb-3">Send</button>
+                    <button type="submit" class="btn btn-primary mb-6">Send</button>
                 </div>
             </div>
         </div>
@@ -28,7 +27,7 @@
         <div class="row">
             <div class="col-md-8 card bg-light mb-3">
                 <div class="card-body">
-                    <p class="card-text"> Somebody: {{ phrase.text }}</p>
+                    <p class="card-text"> Somebody: {{ phrase.phrase }}</p>
                     <p class="card-text"> Bender: {{ phrase.answer }}</p>
                 </div>
             </div>

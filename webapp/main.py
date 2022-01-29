@@ -1,31 +1,17 @@
-from dataclasses import dataclass
-
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 
-
+from app.conversation import Conversation
 import model
 
 
 app = FastAPI(title="Bender's mouth")
-templates = Jinja2Templates(directory="data/templates")
+templates = Jinja2Templates(directory=r"data/templates")
 
 
-@dataclass
-class Phrase:
-    text: str = ""
-    answer: str = ""
-
-conversation = list()
-conversation.append(Phrase("Hi! How are you?", "I'm fine, thanks you"))
-
-
-"""
-API
-"""
-
-
+# API
+#
 @app.get("/api/answer",
          response_description="Bender's answer",
          description="Get Bender's answer")
@@ -33,21 +19,23 @@ async def answer(data: model.PhraseInput):
     return {"phrase": data.phrase}
 
 
-"""
-Web interface
-"""
+# Web interface
+#
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse(r"data/static/favicon.ico")
 
 
 @app.post("/answer",
           response_description="Bender's answer",
           description="Get Bender's answer")
 async def answer_form(request: Request, phrase: str = Form(...)):
-    global conversation
-    conversation.insert(0, Phrase(phrase, "my big answer"))
+    Conversation().answer(phrase)
+    # request.scope["path"] = r"/"
+    request.url.path = r"/"
     return await main(request)
 
 
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
-    global conversation
-    return templates.TemplateResponse("index.html", {"request": request, "conversation": conversation})
+    return templates.TemplateResponse("index.html", {"request": request, "conversation": Conversation().history})

@@ -24,6 +24,11 @@ class Conversation:
     __chat_history_tensor = Optional[torch.Tensor]
 
     def answer(self, phrase: str) -> str:
+        """
+        Ответ на заданный вопрос
+        :param phrase:
+        :return:
+        """
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(phrase)
 
@@ -44,7 +49,7 @@ class Conversation:
             eos_token_id=self.__tokenizer.eos_token_id,
             unk_token_id=self.__tokenizer.unk_token_id,
             pad_token_id=self.__tokenizer.pad_token_id,
-            device='gpu',
+            device='cpu',
         )
 
         # Decode response
@@ -54,7 +59,7 @@ class Conversation:
         return text
 
     def __init__(self):
-        __chat_history_tensor = torch.clone(self.__make_init_tensor())
+        self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
 
     def __new__(cls):
         """
