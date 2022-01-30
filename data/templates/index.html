@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-md-8 card bg-light mb-3">
                 <div class="card-body">
-                    <label>Phrase</label>
+                    <label for="phrase_text">Phrase</label>
                     <br>
                     <textarea id="phrase_text" name="phrase" class="col-md-12" rows="2"
                               placeholder="How are you?" required wrap="hard">
@@ -27,7 +27,6 @@
         <div class="row">
             <div class="col-md-8 card bg-light mb-3">
                 <div class="card-body">
-
                     <div class="row">
                         <p class="col-sm-1"><small> {{ phrase.timestamp.strftime('%Y-%m-%d %H:%M') }}</small></p>
                         <p class="card-text col-sm-6">
