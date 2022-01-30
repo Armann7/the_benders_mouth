@@ -27,8 +27,13 @@
         <div class="row">
             <div class="col-md-8 card bg-light mb-3">
                 <div class="card-body">
-                    <p class="card-text"> Somebody: {{ phrase.phrase }}</p>
-                    <p class="card-text"> Bender: {{ phrase.answer }}</p>
+
+                    <div class="row">
+                        <p class="col-sm-1"><small> {{ phrase.timestamp.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                        <p class="card-text col-sm-6">
+                            Somebody: {{ phrase.phrase }} <br>
+                            Bender: {{ phrase.answer }}</p>
+                    </div>
                 </div>
             </div>
         </div>
