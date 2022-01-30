@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  theheadless_bot:
+    image: armann/the_benders_mouth:latest
+    container_name: the_benders_mouth
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    ports:
+      - '8001:8001'
+    volumes:
+      - /opt/containers/the_benders_mouth/data_local:/App/data_local
