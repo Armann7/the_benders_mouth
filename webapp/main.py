@@ -31,7 +31,7 @@ async def favicon():
 @app.post("/answer",
           response_description="Bender's answer",
           description="Get Bender's answer")
-async def answer_form(request: Request, phrase: str = Form(...)):
+async def answer_form(phrase: str = Form(...)):
     Conversation().answer(phrase)
     return RedirectResponse("/")
 
