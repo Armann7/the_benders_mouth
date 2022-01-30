@@ -31,4 +31,4 @@ WORKDIR $MAIN
 COPY --chown=appuser:appgroup . ./
 
 # make sure you include the -u flag to have our stdout logged
-CMD [ "uvicorn", "webapp/main::app", "port=${PORT}"]
+CMD [ "sh", "-c", "uvicorn --port $PORT webapp/main::app"]

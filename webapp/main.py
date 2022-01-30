@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.conversation import Conversation
-import model
+import webapp.model
 
 
 app = FastAPI(title="Bender's mouth")
@@ -12,14 +12,16 @@ templates = Jinja2Templates(directory=r"data/templates")
 
 # API
 #
-@app.get("/api/answer",
-         response_description="Bender's answer",
-         description="Get Bender's answer")
-async def answer(data: model.PhraseInput):
-    return {"phrase": data.phrase}
+@app.post("/api/answer",
+          response_description="Bender's answer",
+          description="Get Bender's answer")
+async def answer(data: webapp.model.PhraseInput):
+    return {"answer": Conversation().answer(data.phrase)}
 
 
 # Web interface
+# На /answer приходит post запрос с фразой, после получения ответа редиректим в корень,
+# а затем перезагружаем страницу
 #
 @app.get("/favicon.ico")
 async def favicon():
@@ -31,8 +33,11 @@ async def favicon():
           description="Get Bender's answer")
 async def answer_form(request: Request, phrase: str = Form(...)):
     Conversation().answer(phrase)
-    # request.scope["path"] = r"/"
-    request.url.path = r"/"
+    return RedirectResponse("/")
+
+
+@app.post("/")
+async def main_post(request: Request):
     return await main(request)
 
 
