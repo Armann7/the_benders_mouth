@@ -15,6 +15,7 @@ FROM python:3.9-slim
 LABEL maintainer="armann7@gmail.com"
 ENV MAIN=/App
 ENV PORT=8001
+ENV HOST=127.0.0.1
 
 # Create user and group
 RUN groupadd -g 3990 appgroup && useradd -u 3990 --gid appgroup -ms /bin/bash appuser
@@ -31,4 +32,4 @@ WORKDIR $MAIN
 COPY --chown=appuser:appgroup . ./
 
 # make sure you include the -u flag to have our stdout logged
-CMD [ "sh", "-c", "uvicorn --port $PORT --app-dir webapp --access-log main:app"]
+CMD [ "sh", "-c", "uvicorn --host $HOST --port $PORT --app-dir webapp --access-log --log-level debug main:app"]
