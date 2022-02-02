@@ -17,6 +17,9 @@ class Line:
 
 
 class Conversation:
+    """
+    Разговор
+    """
     history = list()
 
     __instance = None
@@ -25,18 +28,16 @@ class Conversation:
     __chat_history_tensor = Optional[torch.Tensor]
     __log = logging.getLogger("Conversation")
 
-    def __init__(self):
-        self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
-
     def answer(self, phrase: str) -> str:
         """
         Ответ на заданный вопрос
         :param phrase:
         :return:
         """
-        self.__log.info("Input phrase: {phrase}".format(phrase=phrase))
+        text_phrase = phrase.strip()
+        self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
-        phrase_tensor = self.__encode_phrase(phrase)
+        phrase_tensor = self.__encode_phrase(text_phrase)
 
         # append the new user input tokens to the chat history
         bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
@@ -59,11 +60,15 @@ class Conversation:
         )
 
         # Decode response
-        text = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
-                                       skip_special_tokens=True)
-        self.history.insert(0, Line(phrase, text))
-        self.__log.info("Answer: {text}".format(text=text))
-        return text
+        text_answer = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
+                                              skip_special_tokens=True)
+        self.history.insert(0, Line(text_phrase, text_answer))
+        self.__log.info("Answer: {text}".format(text=text_answer))
+        return text_answer
+
+    @classmethod
+    def init(cls):
+        cls.__chat_history_tensor = torch.clone(cls.__make_init_tensor())
 
     def __new__(cls, *args, **kwargs):
         """
@@ -71,36 +76,40 @@ class Conversation:
         """
         if cls.__instance is None:
             cls.__instance = object.__new__(cls, *args, **kwargs)
+            cls.init()
         return cls.__instance
 
-    def __encode_phrase(self, text: str) -> torch.Tensor:
+    @classmethod
+    def __encode_phrase(cls, text: str) -> torch.Tensor:
         """
         Закодировать фразу в виде тензора
         :param text:
         :return:
         """
-        line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
-        self.__log.info("Parameters: {line}".format(line=line))
-        return self.__tokenizer.encode(line, return_tensors="pt")
+        line = f"|0|{cls.__get_length_param()}|{text}{cls.__tokenizer.eos_token}|1|1|"
+        cls.__log.info("Parameters: {line}".format(line=line))
+        return cls.__tokenizer.encode(line, return_tensors="pt")
 
-    def __encode_answer(self, text: str) -> torch.Tensor:
+    @classmethod
+    def __encode_answer(cls, text: str) -> torch.Tensor:
         """
         Закодировать ответную фразу в виде тензора
         :param text:
         :return:
         """
-        line = f"|1|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
-        return self.__tokenizer.encode(line, return_tensors="pt")
+        line = f"|1|{cls.__get_length_param()}|{text}{cls.__tokenizer.eos_token}|1|1|"
+        return cls.__tokenizer.encode(line, return_tensors="pt")
 
-    def __make_init_tensor(self) -> torch.Tensor:
+    @classmethod
+    def __make_init_tensor(cls) -> torch.Tensor:
         """
         Инициализируем диалог - чтобы Бендер знал свое имя.
         :return:
         """
         line = "Как тебя зовут?"
-        phrase_tensor = self.__encode_phrase(line)
+        phrase_tensor = cls.__encode_phrase(line)
         line = "Меня зовут Bender"
-        answer_tensor = self.__encode_answer(line)
+        answer_tensor = cls.__encode_answer(line)
         return torch.cat([phrase_tensor, answer_tensor], dim=-1)
 
     @staticmethod
