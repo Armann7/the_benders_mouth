@@ -23,3 +23,5 @@ def test_history():
     assert len(conv.history) > 2
 
 
+if __name__ == '__main__':
+    pytest.main()

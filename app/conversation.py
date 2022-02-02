@@ -25,6 +25,9 @@ class Conversation:
     __chat_history_tensor = Optional[torch.Tensor]
     __log = logging.getLogger("Conversation")
 
+    def __init__(self):
+        self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
+
     def answer(self, phrase: str) -> str:
         """
         Ответ на заданный вопрос
@@ -62,15 +65,12 @@ class Conversation:
         self.__log.info("Answer: {text}".format(text=text))
         return text
 
-    def __init__(self):
-        self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
-
-    def __new__(cls):
+    def __new__(cls, *args, **kwargs):
         """
         Реализуем синглтон
         """
         if cls.__instance is None:
-            cls.__instance = super(Conversation, cls).__new__(cls)
+            cls.__instance = object.__new__(cls, *args, **kwargs)
         return cls.__instance
 
     def __encode_phrase(self, text: str) -> torch.Tensor:
