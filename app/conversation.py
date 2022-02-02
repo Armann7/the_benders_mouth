@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import random
+import logging
 from typing import Optional
 from datetime import datetime
 import torch
@@ -22,6 +23,7 @@ class Conversation:
     __tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
     __model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
     __chat_history_tensor = Optional[torch.Tensor]
+    __log = logging.getLogger("Conversation")
 
     def answer(self, phrase: str) -> str:
         """
@@ -29,6 +31,7 @@ class Conversation:
         :param phrase:
         :return:
         """
+        self.__log.info("Input phrase: {phrase}".format(phrase=phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(phrase)
 
@@ -56,6 +59,7 @@ class Conversation:
         text = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
                                        skip_special_tokens=True)
         self.history.insert(0, Line(phrase, text))
+        self.__log.info("Answer: {text}".format(text=text))
         return text
 
     def __init__(self):
@@ -76,6 +80,7 @@ class Conversation:
         :return:
         """
         line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
+        self.__log.info("Parameters: {line}".format(line=line))
         return self.__tokenizer.encode(line, return_tensors="pt")
 
     def __encode_answer(self, text: str) -> torch.Tensor:
