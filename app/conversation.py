@@ -48,13 +48,16 @@ class Conversation:
         phrase_tensor = self.__encode_phrase(text_phrase)
 
         # append the new user input tokens to the chat history
+        self.__log.debug("Add new user tokens to the chat history")
         bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
 
         # generated a response
+        self.__log.debug("Generate a response")
         self.__chat_history_tensor = self.__model.generate(
             bot_input_tensor,
             num_return_sequences=1,
-            max_length=512,
+            # max_length=512,
+            max_length=128,
             no_repeat_ngram_size=3,
             do_sample=True,
             top_k=50,
@@ -68,6 +71,7 @@ class Conversation:
         )
 
         # Decode response
+        self.__log.debug("Decode a response")
         text_answer = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
                                               skip_special_tokens=True)
         self.history.insert(0, Line(text_phrase, text_answer))
