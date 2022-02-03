@@ -1,4 +1,7 @@
 # Разговаривающий орган Бендера
+Базируется на модели [отсюда.](https://huggingface.co/Grossmend/rudialogpt3_medium_based_on_gpt2)
+Описание [здесь.](https://habr.com/ru/company/icl_services/blog/548244)
+
 
 ### Внешний вид
 SPA, на экране окно ввода, кнопка 'Сказать' и ниже - диалог Бендера.

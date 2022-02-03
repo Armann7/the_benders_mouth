@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import random
+# import random
 import logging
 from datetime import datetime
 import torch
@@ -58,7 +58,7 @@ class Conversation:
             num_return_sequences=1,
             max_length=512,
             # max_length=128,
-            early_stopping=True,
+            # early_stopping=True,
             no_repeat_ngram_size=3,
             do_sample=True,
             top_k=50,
@@ -127,4 +127,5 @@ class Conversation:
         3 - длинная фраза
         - - без ограничения
         """
-        return random.choice(['1', '2', '3'])
+        # return random.choice(['-', '1', '2', '3'])
+        return '1'      # Генерим только короткие ответы. Иначе на сервере очень долго
