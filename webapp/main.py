@@ -11,6 +11,7 @@ import webapp.model
 app = FastAPI(title="Bender's mouth")
 templates = Jinja2Templates(directory=r"data/templates")
 log = logging.getLogger("The Bender's Mouth")
+conversation = Conversation()
 
 
 async def get_answer(phrase: str) -> str:
@@ -20,7 +21,7 @@ async def get_answer(phrase: str) -> str:
     :return:
     """
     loop = asyncio.get_event_loop()
-    future_request = loop.run_in_executor(None, Conversation().answer, phrase)
+    future_request = loop.run_in_executor(None, conversation.answer, phrase)
     text = await future_request
     return text
 
@@ -61,4 +62,4 @@ async def main_post(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 async def main(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "conversation": Conversation().history})
+    return templates.TemplateResponse("index.html", {"request": request, "conversation": conversation   .history})
