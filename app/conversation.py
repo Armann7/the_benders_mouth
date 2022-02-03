@@ -56,8 +56,9 @@ class Conversation:
         self.__chat_history_tensor = self.__model.generate(
             bot_input_tensor,
             num_return_sequences=1,
-            # max_length=512,
-            max_length=128,
+            max_length=512,
+            # max_length=128,
+            early_stopping=True,
             no_repeat_ngram_size=3,
             do_sample=True,
             top_k=50,
