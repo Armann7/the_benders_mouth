@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseSettings
 import asyncio
 import logging
 
@@ -8,7 +9,11 @@ from app.conversation import Conversation
 import webapp.model
 
 
-app = FastAPI(title="Bender's mouth")
+class Settings(BaseSettings):
+    openapi_url: str = "data/api/openapi-0.1.0.json"
+
+
+app = FastAPI(openapi_url=Settings().openapi_url)
 templates = Jinja2Templates(directory=r"data/templates")
 log = logging.getLogger("The Bender's Mouth")
 conversation = Conversation()
@@ -31,7 +36,7 @@ async def get_answer(phrase: str) -> str:
 @app.post("/api/answer",
           response_description="Bender's answer",
           description="Get Bender's answer")
-async def answer(data: webapp.model.PhraseInput):
+async def answer(data):
     log.info("API call, input phrase: {phrase}".format(phrase=data.phrase))
     text = await get_answer(data.phrase)
     return {"answer": text}
