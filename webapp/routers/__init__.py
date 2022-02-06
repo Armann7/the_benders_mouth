@@ -7,7 +7,7 @@ from webapp.routers.web import router as router_web
 router = APIRouter()
 
 # API
-router.include_router(router_talk, tags=["talk"], prefix="/api/talk")
+router.include_router(router_talk, tags=["talk"], prefix="/api/{version}/talk")
 
 # Web interface
-router.include_router(router_web, tags=["web"], prefix="")
+router.include_router(router_web, include_in_schema=False, tags=["web"], prefix="")
