@@ -1,6 +1,6 @@
 import pytest
 
-from app.conversation import Conversation
+from app.talk import Talk
 
 
 @pytest.mark.run(order=1)
@@ -12,15 +12,15 @@ from app.conversation import Conversation
                           r"Кто твой создатель?",
                           r"Снятся ли Андроидам электроовцы?"])
 def test_conversation(test_input):
-    conv = Conversation()
-    answer = conv.answer(test_input)
+    talk = Talk()
+    answer = talk.answer(test_input)
     assert answer != ""
 
 
 @pytest.mark.run(order=2)
 def test_history():
-    conv = Conversation()
-    assert len(conv.history) > 2
+    talk = Talk()
+    assert len(talk.history) > 2
 
 
 if __name__ == '__main__':

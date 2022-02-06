@@ -7,6 +7,6 @@ client = TestClient(app)
 
 
 def test_read_main():
-    response = client.post("/api/answer", json={"phrase": "Привет! Как дела?"})
+    response = client.get("/api/talk", params={"phrase": "Привет! Как дела?"})
     assert response.status_code == 200
-    assert response.json()["answer"] != ""
+    assert response.json()["response"] != ""

@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-# import random
-import logging
 from datetime import datetime
-import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+import logging
 
 import config
 
@@ -15,7 +14,7 @@ class Line:
     timestamp = datetime.now()
 
 
-class Conversation:
+class Talk:
     """
     Разговор
     """
