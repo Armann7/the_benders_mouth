@@ -7,11 +7,16 @@ import logging
 import config
 
 
-@dataclass
+@dataclass()
 class Line:
     phrase: str
     answer: str
-    timestamp = datetime.now()
+    timestamp: datetime
+
+    def __init__(self, phrase, answer, timestamp=None):
+        self.phrase = phrase
+        self.answer = answer
+        self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
 class Talk:

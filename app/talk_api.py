@@ -22,4 +22,7 @@ def history():
     История разговора
     :return:
     """
-    return talk.history
+    hist = list()
+    for line in talk.history:
+        hist.append([f'{line.timestamp:%Y-%m-%d %H:%M}', line.phrase, line.answer])
+    return hist
