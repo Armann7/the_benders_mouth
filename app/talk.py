@@ -20,7 +20,7 @@ class Line:
         self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
-class Talk(object, LogMixin):
+class Talk(LogMixin):
     """
     Разговор
     """
@@ -35,6 +35,7 @@ class Talk(object, LogMixin):
     def __init__(self):
         # Хотя у нас и синглтон, однако конструктор вызывается при каждой попытке создания объекта
         if "history" not in self.__dict__:
+            super().__init__()
             self.history = list()
             self.__log = logging.getLogger("Conversation")
             self.__tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
