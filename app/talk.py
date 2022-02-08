@@ -10,11 +10,13 @@ from utils.logger import LogMixin
 
 @dataclass()
 class Line:
+    id: int
     phrase: str
     answer: str
     timestamp: datetime
 
     def __init__(self, phrase, answer, timestamp=None):
+        self.id = 0
         self.phrase = phrase
         self.answer = answer
         self.timestamp = timestamp if timestamp is not None else datetime.now()
@@ -31,12 +33,14 @@ class Talk(LogMixin):
     # __model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
     # __chat_history_tensor = Optional[torch.Tensor]
     # __log = logging.getLogger("Conversation")
+    # __id - номер запроса
 
     def __init__(self):
         # Хотя у нас и синглтон, однако конструктор вызывается при каждой попытке создания объекта
         if "history" not in self.__dict__:
             super().__init__()
             self.history = list()
+            self.__id = 0
             self.__log = logging.getLogger("Conversation")
             self.__tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
             self.__model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
@@ -48,14 +52,15 @@ class Talk(LogMixin):
         :param phrase:
         :return:
         """
+        self.__id += 1
         text_phrase = phrase.strip()
-        self.info("Input phrase: {phrase}".format(phrase=text_phrase))
+        self.info("({id}) Input phrase: {phrase}".format(id=self.__id, phrase=text_phrase))
         # self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(text_phrase)
 
         # append the new user input tokens to the chat history
-        self.__log.debug("Add new user tokens to the chat history")
+        self.__log.debug("({id}) Add new user tokens to the chat history".format(id=self.__id))
         bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
 
         # generated a response
@@ -101,7 +106,7 @@ class Talk(LogMixin):
         :return:
         """
         line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
-        self.__log.info("Parameters: {line}".format(line=line))
+        self.__log.info("({id}) Parameters: {line}".format(id=self.__id, line=line))
         return self.__tokenizer.encode(line, return_tensors="pt")
 
     def __encode_answer(self, text: str) -> torch.Tensor:
