@@ -5,6 +5,7 @@ import torch
 import logging
 
 import config
+from utils.logger import LogMixin
 
 
 @dataclass()
@@ -19,7 +20,7 @@ class Line:
         self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
-class Talk:
+class Talk(object, LogMixin):
     """
     Разговор
     """
@@ -47,7 +48,8 @@ class Talk:
         :return:
         """
         text_phrase = phrase.strip()
-        self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
+        self.info("Input phrase: {phrase}".format(phrase=text_phrase))
+        # self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(text_phrase)
 
