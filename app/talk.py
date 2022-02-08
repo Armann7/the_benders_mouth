@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-import logging
+# import logging
 
 import config
 from utils.logger import LogMixin
@@ -41,7 +41,7 @@ class Talk(LogMixin):
             super().__init__()
             self.history = list()
             self.__id = 0
-            self.__log = logging.getLogger("Conversation")
+            # self.__log = logging.getLogger("Conversation")
             self.__tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
             self.__model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
             self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
@@ -54,17 +54,17 @@ class Talk(LogMixin):
         """
         self.__id += 1
         text_phrase = phrase.strip()
-        self.info("({id}) Input phrase: {phrase}".format(id=self.__id, phrase=text_phrase))
+        self.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(text_phrase)
 
         # append the new user input tokens to the chat history
-        self.__log.debug("({id}) Add new user tokens to the chat history".format(id=self.__id))
+        self.debug("(Add new user tokens to the chat history")
         bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
 
         # generated a response
-        self.__log.debug("Generate a response")
+        self.debug("Generate a response")
         self.__chat_history_tensor = self.__model.generate(
             bot_input_tensor,
             num_return_sequences=1,
@@ -84,12 +84,18 @@ class Talk(LogMixin):
         )
 
         # Decode response
-        self.__log.debug("Decode a response")
+        self.debug("Decode a response")
         text_answer = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
                                               skip_special_tokens=True)
         self.history.insert(0, Line(text_phrase, text_answer))
-        self.__log.info("Answer: {text}".format(text=text_answer))
+        self.info(f"Answer: {text_answer}")
         return text_answer
+
+    def info(self, msg: str):
+        super().info("({id}) {msg}".format(id=self.__id, msg=msg))
+
+    def debug(self, msg: str):
+        super().debug("({id}) {msg}".format(id=self.__id, msg=msg))
 
     def __new__(cls, *args, **kwargs):
         """
@@ -106,7 +112,7 @@ class Talk(LogMixin):
         :return:
         """
         line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
-        self.__log.info("({id}) Parameters: {line}".format(id=self.__id, line=line))
+        self.info(f"Parameters: {line}")
         return self.__tokenizer.encode(line, return_tensors="pt")
 
     def __encode_answer(self, text: str) -> torch.Tensor:
