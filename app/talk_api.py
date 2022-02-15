@@ -1,8 +1,9 @@
 import asyncio
+
 import app.talk
 
 
-talk = app.talk.Talk()
+TALK = app.talk.Talk()
 
 
 async def response(phrase: str) -> str:
@@ -12,17 +13,15 @@ async def response(phrase: str) -> str:
     :return:
     """
     loop = asyncio.get_event_loop()
-    future_request = loop.run_in_executor(None, talk.answer, phrase)
-    text = await future_request
-    return text
+    future_request = loop.run_in_executor(None, TALK.answer, phrase)
+    return await future_request
 
 
-def history():
+def history() -> list:
     """
     История разговора
-    :return:
     """
     hist = list()
-    for line in talk.history:
-        hist.append([f'{line.timestamp:%Y-%m-%d %H:%M}', line.phrase, line.answer])
+    for line in TALK.history:
+        hist.append([f'{line.timestamp:%Y-%m-%d %H:%M}', line.phrase, line.response])
     return hist

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-# import logging
 
 import config
 from utils.logger import LogMixin
@@ -12,13 +11,13 @@ from utils.logger import LogMixin
 class Line:
     id: int
     phrase: str
-    answer: str
+    response: str
     timestamp: datetime
 
-    def __init__(self, phrase, answer, timestamp=None):
+    def __init__(self, phrase, response, timestamp=None):
         self.id = 0
         self.phrase = phrase
-        self.answer = answer
+        self.response = response
         self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
@@ -26,22 +25,14 @@ class Talk(LogMixin):
     """
     Разговор
     """
-    __instance = None
-
-    # history = list()
-    # __tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
-    # __model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
-    # __chat_history_tensor = Optional[torch.Tensor]
-    # __log = logging.getLogger("Conversation")
-    # __id - номер запроса
+    __instance: object = None
 
     def __init__(self):
         # Хотя у нас и синглтон, однако конструктор вызывается при каждой попытке создания объекта
-        if "history" not in self.__dict__:
+        if not hasattr(self, "history"):
             super().__init__()
             self.history = list()
             self.__id = 0
-            # self.__log = logging.getLogger("Conversation")
             self.__tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
             self.__model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
             self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
@@ -55,7 +46,6 @@ class Talk(LogMixin):
         self.__id += 1
         text_phrase = phrase.strip()
         self.info("Input phrase: {phrase}".format(phrase=text_phrase))
-        # self.__log.info("Input phrase: {phrase}".format(phrase=text_phrase))
         # encode the new phrase, add parameters and return a tensor in Pytorch
         phrase_tensor = self.__encode_phrase(text_phrase)
 
@@ -83,13 +73,13 @@ class Talk(LogMixin):
             device='cpu',
         )
 
-        # Decode response
         self.debug("Decode a response")
-        text_answer = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
-                                              skip_special_tokens=True)
-        self.history.insert(0, Line(text_phrase, text_answer))
-        self.info(f"Answer: {text_answer}")
-        return text_answer
+        text_response = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
+                                                skip_special_tokens=True)
+
+        self.history.insert(0, Line(text_phrase, text_response))
+        self.info(f"Response: {text_response}")
+        return text_response
 
     def info(self, msg: str):
         super().info("({id}) {msg}".format(id=self.__id, msg=msg))
@@ -97,7 +87,7 @@ class Talk(LogMixin):
     def debug(self, msg: str):
         super().debug("({id}) {msg}".format(id=self.__id, msg=msg))
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> object:
         """
         Реализуем синглтон
         """
@@ -115,7 +105,7 @@ class Talk(LogMixin):
         self.info(f"Parameters: {line}")
         return self.__tokenizer.encode(line, return_tensors="pt")
 
-    def __encode_answer(self, text: str) -> torch.Tensor:
+    def __encode_response(self, text: str) -> torch.Tensor:
         """
         Закодировать ответную фразу в виде тензора
         :param text:
@@ -132,8 +122,8 @@ class Talk(LogMixin):
         line = "Как тебя зовут?"
         phrase_tensor = self.__encode_phrase(line)
         line = "Меня зовут Bender"
-        answer_tensor = self.__encode_answer(line)
-        return torch.cat([phrase_tensor, answer_tensor], dim=-1)
+        response_tensor = self.__encode_response(line)
+        return torch.cat([phrase_tensor, response_tensor], dim=-1)
 
     @staticmethod
     def __get_length_param() -> str:
@@ -146,4 +136,4 @@ class Talk(LogMixin):
         - - без ограничения
         """
         # return random.choice(['-', '1', '2', '3'])
-        return '1'      # Генерим только короткие ответы. Иначе на сервере очень долго
+        return '1'      # Генерим только короткие ответы. Иначе на слабом сервере долго работает

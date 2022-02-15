@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 # from fastapi.staticfiles import StaticFiles
 
-# import config
 from webapp.routers import router
 
 
