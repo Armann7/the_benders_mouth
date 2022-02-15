@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "2d4bd5b3-4b6d-422e-b39b-8f1e47aa6e1d",
+		"name": "The Bender's Mouth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Фраза - все ок",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/api/v1/talk?phrase=Привет, лунатики!",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"talk"
+					],
+					"query": [
+						{
+							"key": "phrase",
+							"value": "Привет, лунатики!"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Фраза - неправильная версия",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"server = pm.environment.get(\"server\");\r",
+							"\r",
+							"pm.test(\"Status code is 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/api/v999/talk?phrase=Привет, лунатики!",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"v999",
+						"talk"
+					],
+					"query": [
+						{
+							"key": "phrase",
+							"value": "Привет, лунатики!"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "История",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/api/v1/talk/history",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"talk",
+						"history"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"server = pm.environment.get(\"server\");",
+					"pm.globals.set(\"server\", server);",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

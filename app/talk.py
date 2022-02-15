@@ -10,16 +10,19 @@ from utils.logger import LogMixin
 
 @dataclass()
 class Line:
+    """
+    Один обмен фразами - реплика и ответ
+    """
     id: int
     phrase: str
     response: str
-    timestamp: datetime
+    timestamp: datetime = datetime.now()
 
-    def __init__(self, phrase, response, timestamp=None):
+    def __init__(self, phrase, response):
         self.id = 0
         self.phrase = phrase
         self.response = response
-        self.timestamp = timestamp if timestamp is not None else datetime.now()
+        # self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
 class Talk(LogMixin):

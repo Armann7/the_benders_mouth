@@ -19,7 +19,7 @@ build-image-job:
   script:
     - docker build -f env/docker/Dockerfile -t armann/the_benders_mouth:latest .
 
-# Testing, with the same image, but another container
+# Create a test container and test
 test-job:
   stage: test
   script:
