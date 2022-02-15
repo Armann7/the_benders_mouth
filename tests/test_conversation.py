@@ -17,7 +17,7 @@ def test_conversation(test_input):
     assert answer != ""
 
 
-@pytest.mark.run(order=2)
+@pytest.mark.run(order=5)
 def test_history():
     talk = Talk()
     assert len(talk.history) > 2

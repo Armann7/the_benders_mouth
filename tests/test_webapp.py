@@ -14,7 +14,7 @@ def test_read_main():
     assert response.json()["response"] != ""
 
 
-@pytest.mark.run(order=1)
+@pytest.mark.run(order=5)
 def test_history():
     response = client.get("/api/v1/talk/history")
     assert response.status_code == 200

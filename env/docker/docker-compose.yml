@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  theheadless_bot:
+  the_benders_mouth:
     image: armann/the_benders_mouth:latest
     container_name: the_benders_mouth
     cap_drop:

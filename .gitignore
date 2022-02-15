@@ -2,3 +2,4 @@ venv
 .idea
 data_local
 .pytest_cache
+.mypy_cache

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
@@ -45,16 +46,14 @@ class Talk(LogMixin):
         """
         self.__id += 1
         text_phrase = phrase.strip()
-        self.info("Input phrase: {phrase}".format(phrase=text_phrase))
-        # encode the new phrase, add parameters and return a tensor in Pytorch
+        # self.info("Input phrase: {phrase}".format(phrase=text_phrase))
+        self.log_info(f"Input phrase: {text_phrase}")
         phrase_tensor = self.__encode_phrase(text_phrase)
 
-        # append the new user input tokens to the chat history
-        self.debug("(Add new user tokens to the chat history")
+        self.log_debug("Add new user tokens to the chat history")
         bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
 
-        # generated a response
-        self.debug("Generate a response")
+        self.log_debug("Generate a response")
         self.__chat_history_tensor = self.__model.generate(
             bot_input_tensor,
             num_return_sequences=1,
@@ -73,21 +72,21 @@ class Talk(LogMixin):
             device='cpu',
         )
 
-        self.debug("Decode a response")
+        self.log_debug("Decode a response")
         text_response = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
                                                 skip_special_tokens=True)
 
         self.history.insert(0, Line(text_phrase, text_response))
-        self.info(f"Response: {text_response}")
+        self.log_info(f"Response: {text_response}")
         return text_response
 
-    def info(self, msg: str):
-        super().info("({id}) {msg}".format(id=self.__id, msg=msg))
+    def log_info(self, msg: str):
+        super().info(f"({self.__id}) {msg}")
 
-    def debug(self, msg: str):
-        super().debug("({id}) {msg}".format(id=self.__id, msg=msg))
+    def log_debug(self, msg: str):
+        super().debug(f"({self.__id}) {msg}")
 
-    def __new__(cls, *args, **kwargs) -> object:
+    def __new__(cls, *args, **kwargs):
         """
         Реализуем синглтон
         """
@@ -102,7 +101,7 @@ class Talk(LogMixin):
         :return:
         """
         line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
-        self.info(f"Parameters: {line}")
+        self.log_info(f"Parameters: {line}")
         return self.__tokenizer.encode(line, return_tensors="pt")
 
     def __encode_response(self, text: str) -> torch.Tensor:

@@ -7,3 +7,5 @@ torch
 transformers
 pytest
 pytest-ordering
+mypy
+bandit

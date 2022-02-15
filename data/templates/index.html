@@ -22,16 +22,16 @@
 
 <br>
 <div class="container-fluid">
-    {% for phrase in conversation %}
+    {% for line in conversation %}
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 card bg-light mb-3">
                 <div class="card-body">
                     <div class="row">
-                        <p class="col-sm-1"><small> {{ phrase.timestamp.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                        <p class="col-sm-1"><small> {{ line[0] }}</small></p>
                         <p class="card-text col-sm-6">
-                            Somebody: {{ phrase.phrase }} <br>
-                            Bender: {{ phrase.answer }}</p>
+                            Somebody: {{ line[1] }}<br>
+                            Bender: {{ line[2] }}</p>
                     </div>
                 </div>
             </div>

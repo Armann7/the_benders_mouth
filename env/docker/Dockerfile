@@ -30,6 +30,7 @@ ENV TZ=Europe/Moscow
 COPY --from=builder --chown=appuser:appgroup /home/appuser/.local /home/appuser/.local
 WORKDIR $MAIN
 COPY --chown=appuser:appgroup . ./
+RUN chmod +x env/*.sh
 
 # make sure you include the -u flag to have our stdout logged
 # CMD [ "sh", "-c", "uvicorn --host $HOST --port $PORT --app-dir webapp --access-log --log-level debug main:app"]

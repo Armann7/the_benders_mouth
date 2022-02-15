@@ -10,13 +10,21 @@ workflow:
 
 stages:
   - build-image
+  - test
   - run
 
 # Build an image
 build-image-job:
   stage: build-image
   script:
-    - docker build -f env/Dockerfile -t armann/the_benders_mouth:latest .
+    - docker build -f env/docker/Dockerfile -t armann/the_benders_mouth:latest .
+
+# Testing, with the same image, but another container
+test-job:
+  stage: test
+  script:
+    - docker-compose -f env/docker/docker-compose.yml run --name "the_benders_mouth_test" --rm
+        the_benders_mouth env/test_and_check.sh
 
 # Create a container and run
 run-job:
@@ -25,4 +33,4 @@ run-job:
     - docker stop the_benders_mouth || exit_code_delete=$?
     - docker rm the_benders_mouth || exit_code_delete=$?
   script:
-    - docker-compose -f env/docker-compose.yml up -d --force-recreate
+    - docker-compose -f env/docker/docker-compose.yml up -d --force-recreate
