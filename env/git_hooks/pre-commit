@@ -7,6 +7,5 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-env/check_pylint.cmd
-env/check_mypy.cmd
-env/check_bandit.cmd
+env/check_all.cmd
+
