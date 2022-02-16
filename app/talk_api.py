@@ -1,3 +1,6 @@
+"""
+API к разговорам
+"""
 import asyncio
 
 import app.talk
@@ -21,7 +24,7 @@ def history() -> list:
     """
     История разговора
     """
-    hist = list()
+    hist = []
     for line in TALK.history:
         hist.append([f'{line.timestamp:%Y-%m-%d %H:%M}', line.phrase, line.response])
     return hist

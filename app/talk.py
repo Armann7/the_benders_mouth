@@ -16,13 +16,13 @@ class Line:
     """
     Один обмен фразами - реплика и ответ
     """
-    id: int
+    ident: int
     phrase: str
     response: str
     timestamp: datetime = datetime.now()
 
     def __init__(self, phrase, response):
-        self.id = 0
+        self.ident = 0
         self.phrase = phrase
         self.response = response
 
@@ -58,8 +58,9 @@ class Talk(LogMixin):
         phrase_tensor = self.__encode_phrase(text_phrase)
 
         self.log_debug("Add new user tokens to the chat history")
-        bot_input_tensor = torch.cat(
-            [self.__chat_history_tensor, phrase_tensor], dim=-1)
+        bot_input_tensor = torch.cat(           # pylint: disable=E1101
+            [self.__chat_history_tensor, phrase_tensor],
+            dim=-1)
 
         self.log_debug("Generate a response")
         self.__chat_history_tensor = self.__model.generate(
@@ -90,12 +91,18 @@ class Talk(LogMixin):
         return text_response
 
     def log_info(self, msg: str):
+        """
+        Сообщение в лог
+        """
         super().info(f"({self.__id}) {msg}")
 
     def log_debug(self, msg: str):
+        """
+        Сообщение в лог
+        """
         super().debug(f"({self.__id}) {msg}")
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         """
         Реализуем синглтон
         """
@@ -133,7 +140,8 @@ class Talk(LogMixin):
         phrase_tensor = self.__encode_phrase(line)
         line = "Меня зовут Bender"
         response_tensor = self.__encode_response(line)
-        return torch.cat([phrase_tensor, response_tensor], dim=-1)
+        return torch.cat(                           # pylint: disable=E1101
+            [phrase_tensor, response_tensor], dim=-1)
 
     @staticmethod
     def __get_length_param() -> str:
