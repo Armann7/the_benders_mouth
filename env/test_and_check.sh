@@ -9,12 +9,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # Mypy
-mypy $MAIN
-if [ $? -ne 0 ]; then
-  echo MyPy checks error
-  exit 1
-fi
-
+#mypy $MAIN
+#if [ $? -ne 0 ]; then
+#  echo MyPy checks error
+#  exit 1
+#fi
 
 # bandit
 bandit --configfile $MAIN/env/bandit.yaml -r $MAIN/app
