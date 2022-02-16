@@ -1,1 +1,2 @@
-"../venv/Scripts/mypy" .. --exclude /venv
+"venv/Scripts/mypy" --exclude venv .
+

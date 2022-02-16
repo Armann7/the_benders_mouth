@@ -7,7 +7,6 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-MAIN="."
-export $MAIN
-# exec env/test_and_check.sh
-exec env/check_bandit.cmd
+# env/check_pylint.cmd
+env/check_mypy.cmd
+env/check_bandit.cmd

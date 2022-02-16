@@ -1,3 +1,6 @@
+"""
+Разговоры
+"""
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -22,7 +25,6 @@ class Line:
         self.id = 0
         self.phrase = phrase
         self.response = response
-        # self.timestamp = timestamp if timestamp is not None else datetime.now()
 
 
 class Talk(LogMixin):
@@ -32,13 +34,15 @@ class Talk(LogMixin):
     __instance: object = None
 
     def __init__(self):
-        # Хотя у нас и синглтон, однако конструктор вызывается при каждой попытке создания объекта
+        # Хотя у нас и синглтон, однако конструктор вызывается
+        # при каждой попытке создания объекта
         if not hasattr(self, "history"):
             super().__init__()
-            self.history = list()
+            self.history = []
             self.__id = 0
             self.__tokenizer = AutoTokenizer.from_pretrained(config.DATA_GPT2)
-            self.__model = AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
+            self.__model = \
+                AutoModelForCausalLM.from_pretrained(config.DATA_GPT2)
             self.__chat_history_tensor = torch.clone(self.__make_init_tensor())
 
     def answer(self, phrase: str) -> str:
@@ -54,7 +58,8 @@ class Talk(LogMixin):
         phrase_tensor = self.__encode_phrase(text_phrase)
 
         self.log_debug("Add new user tokens to the chat history")
-        bot_input_tensor = torch.cat([self.__chat_history_tensor, phrase_tensor], dim=-1)
+        bot_input_tensor = torch.cat(
+            [self.__chat_history_tensor, phrase_tensor], dim=-1)
 
         self.log_debug("Generate a response")
         self.__chat_history_tensor = self.__model.generate(
@@ -76,8 +81,9 @@ class Talk(LogMixin):
         )
 
         self.log_debug("Decode a response")
-        text_response = self.__tokenizer.decode(self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
-                                                skip_special_tokens=True)
+        text_response = self.__tokenizer.decode(
+            self.__chat_history_tensor[:, bot_input_tensor.shape[-1]:][0],
+            skip_special_tokens=True)
 
         self.history.insert(0, Line(text_phrase, text_response))
         self.log_info(f"Response: {text_response}")
@@ -103,7 +109,8 @@ class Talk(LogMixin):
         :param text:
         :return:
         """
-        line = f"|0|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
+        eos_token = self.__tokenizer.eos_token
+        line = f"|0|{self.__get_length_param()}|{text}{eos_token}|1|1|"
         self.log_info(f"Parameters: {line}")
         return self.__tokenizer.encode(line, return_tensors="pt")
 
@@ -113,7 +120,8 @@ class Talk(LogMixin):
         :param text:
         :return:
         """
-        line = f"|1|{self.__get_length_param()}|{text}{self.__tokenizer.eos_token}|1|1|"
+        eos_token = self.__tokenizer.eos_token
+        line = f"|1|{self.__get_length_param()}|{text}{eos_token}|1|1|"
         return self.__tokenizer.encode(line, return_tensors="pt")
 
     def __make_init_tensor(self) -> torch.Tensor:
@@ -138,4 +146,6 @@ class Talk(LogMixin):
         - - без ограничения
         """
         # return random.choice(['-', '1', '2', '3'])
-        return '1'      # Генерим только короткие ответы. Иначе на слабом сервере долго работает
+        # Генерим только короткие ответы.
+        # Иначе на слабом сервере долго работает
+        return '1'
